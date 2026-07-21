@@ -27,7 +27,7 @@ public class MemberService {
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        return memberRepository.findAll(pageable)
+        return memberRepository.findAllByDeletedFalse(pageable)
                 .map(MemberMapper::mapToDto);
     }
 
@@ -51,10 +51,13 @@ public class MemberService {
     }
 
     public void deleteMember(Long id) {
-        if (!memberRepository.existsById(id)) {
-            throw new MemberNotFoundException("Member not found with id: " + id);
-        }
-        memberRepository.deleteById(id);
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Member not found with id: " + id));
+
+        member.setDeleted(true);
+
+        memberRepository.save(member);
     }
 
 }

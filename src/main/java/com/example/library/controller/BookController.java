@@ -3,6 +3,8 @@ package com.example.library.controller;
 import com.example.library.dto.BookRequestDto;
 import com.example.library.dto.BookResponseDto;
 import com.example.library.service.BookService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,11 +13,19 @@ import org.springframework.web.bind.annotation.*;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
+@Tag(
+        name = "Book",
+        description = "Book management APIs"
+)
 @RestController
 @RequestMapping("/books")
 @RequiredArgsConstructor
 public class BookController {
     private final BookService bookService;
+    @Operation(
+            summary = "Get all books",
+            description = "Returns paginated and sorted list of books"
+    )
     @GetMapping
     public Page<BookResponseDto> getAllBooks(
             @RequestParam(defaultValue = "0") int page,

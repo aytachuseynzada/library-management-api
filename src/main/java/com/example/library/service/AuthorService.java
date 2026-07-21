@@ -28,7 +28,7 @@ public class AuthorService {
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        return authorRepository.findAll(pageable)
+        return authorRepository.findAllByDeletedFalse(pageable)
                 .map(AuthorMapper::mapToDto);
     }
 
@@ -53,9 +53,12 @@ public class AuthorService {
     }
 
     public void deleteAuthor(Long id) {
-        if (!authorRepository.existsById(id)) {
-            throw new RuntimeException("Author not found with id: " + id);
-        }
-        authorRepository.deleteById(id);
+        Author author = authorRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Author not found with id: " + id));
+
+        author.setDeleted(true);
+
+        authorRepository.save(author);
     }
 }

@@ -16,4 +16,7 @@ public class Member {
     private Long id;
     private String name;
     private String email;
+
+    @Column(nullable = false)
+    private boolean deleted = false;
 }

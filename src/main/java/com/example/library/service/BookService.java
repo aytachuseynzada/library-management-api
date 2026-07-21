@@ -32,7 +32,7 @@ public class BookService {
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        return bookRepository.findAll(pageable)
+        return bookRepository.findAllByDeletedFalse(pageable)
                 .map(BookMapper::mapToDto);
     }
 
@@ -60,12 +60,12 @@ public class BookService {
     }
 
     public void deleteBook(Long id) {
-        if (!bookRepository.existsById(id)) {
-            throw new BookNotFoundException("Book not found with id: " + id);
-        }
-        bookRepository.deleteById(id);
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Book not found with id: " + id));
+
+        book.setDeleted(true);
+
+        bookRepository.save(book);
     }
-
-
-
 }

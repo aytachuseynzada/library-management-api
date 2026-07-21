@@ -3,6 +3,8 @@ package com.example.library.controller;
 import com.example.library.dto.MemberRequestDto;
 import com.example.library.dto.MemberResponseDto;
 import com.example.library.service.MemberService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,12 +13,19 @@ import org.springframework.web.bind.annotation.*;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
+@Tag(
+        name = "Member",
+        description = "Member management APIs"
+)
 @RestController
 @RequestMapping("/members")
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
-
+    @Operation(
+            summary = "Get all members",
+            description = "Returns paginated and sorted list of members"
+    )
     @GetMapping
     public Page<MemberResponseDto> getAllMembers(
             @RequestParam(defaultValue = "0") int page,

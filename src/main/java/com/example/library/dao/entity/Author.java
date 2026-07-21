@@ -21,4 +21,6 @@ public class Author {
     private String bio;
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Book> books = new ArrayList<>();
+    @Column(nullable = false)
+    private boolean deleted = false;
 }

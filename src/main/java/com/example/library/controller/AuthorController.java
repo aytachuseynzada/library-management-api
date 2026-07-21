@@ -3,6 +3,8 @@ package com.example.library.controller;
 import com.example.library.dto.AuthorRequestDto;
 import com.example.library.dto.AuthorResponseDto;
 import com.example.library.service.AuthorService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,11 +13,19 @@ import org.springframework.web.bind.annotation.*;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
+@Tag(
+        name = "Author",
+        description = "Author management APIs"
+)
 @RestController
 @RequestMapping("/authors")
 @RequiredArgsConstructor
 public class AuthorController {
     private final AuthorService authorService;
+    @Operation(
+            summary = "Get all authors",
+            description = "Returns paginated and sorted list of authors"
+    )
     @GetMapping
     public Page<AuthorResponseDto> getAllAuthors(
             @RequestParam(defaultValue = "0") int page,
