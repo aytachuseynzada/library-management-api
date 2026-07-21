@@ -10,6 +10,10 @@ import com.example.library.exception.AuthorNotFoundException;
 import com.example.library.exception.BookNotFoundException;
 import com.example.library.mapper.BookMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,10 +24,16 @@ public class BookService {
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
 
-    public List<BookResponseDto> getAllBooks() {
-        return bookRepository.findAll().stream()
-                .map(BookMapper::mapToDto)
-                .toList();
+    public Page<BookResponseDto> getAllBooks(int page, int size, String sortBy, String direction) {
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return bookRepository.findAll(pageable)
+                .map(BookMapper::mapToDto);
     }
 
     public BookResponseDto getBookById(Long id) {

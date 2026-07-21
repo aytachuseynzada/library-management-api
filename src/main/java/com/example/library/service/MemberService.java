@@ -7,19 +7,28 @@ import com.example.library.dto.MemberResponseDto;
 import com.example.library.exception.MemberNotFoundException;
 import com.example.library.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
 
-    public List<MemberResponseDto> getAllMembers() {
-        return memberRepository.findAll().stream()
-                .map(MemberMapper::mapToDto)
-                .toList();
+    public Page<MemberResponseDto> getAllMembers(int page, int size, String sortBy, String direction) {
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return memberRepository.findAll(pageable)
+                .map(MemberMapper::mapToDto);
     }
 
     public MemberResponseDto getMemberById(Long id) {

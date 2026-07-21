@@ -5,9 +5,8 @@ import com.example.library.dto.AuthorResponseDto;
 import com.example.library.service.AuthorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
@@ -18,8 +17,13 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 public class AuthorController {
     private final AuthorService authorService;
     @GetMapping
-    public List<AuthorResponseDto> getAllAuthors() {
-        return authorService.getAllAuthors();
+    public Page<AuthorResponseDto> getAllAuthors(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction) {
+
+        return authorService.getAllAuthors(page, size, sortBy, direction);
     }
 
     @GetMapping("/{id}")

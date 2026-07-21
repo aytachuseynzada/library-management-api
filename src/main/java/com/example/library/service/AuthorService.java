@@ -7,6 +7,10 @@ import com.example.library.dto.AuthorResponseDto;
 import com.example.library.exception.AuthorNotFoundException;
 import com.example.library.mapper.AuthorMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,11 +20,18 @@ import java.util.List;
 public class AuthorService {
     private final AuthorRepository authorRepository;
 
-    public List<AuthorResponseDto> getAllAuthors() {
-        return authorRepository.findAll().stream()
-                .map(AuthorMapper::mapToDto)
-                .toList();
+    public Page<AuthorResponseDto> getAllAuthors(int page, int size, String sortBy, String direction) {
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return authorRepository.findAll(pageable)
+                .map(AuthorMapper::mapToDto);
     }
+
 
     public AuthorResponseDto getAuthorById(Long id) {
         Author author = authorRepository.findById(id)
