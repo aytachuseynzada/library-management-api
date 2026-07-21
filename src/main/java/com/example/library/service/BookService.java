@@ -37,5 +37,23 @@ public class BookService {
         return BookMapper.mapToDto(saved);
     }
 
+    public BookResponseDto updateBook(Long id, BookRequestDto dto) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
+        Author author = authorRepository.findById(dto.getAuthorId())
+                .orElseThrow(() -> new RuntimeException("Author not found with id: " + dto.getAuthorId()));
+        BookMapper.updateEntity(book, dto, author);
+        Book updated = bookRepository.save(book);
+        return BookMapper.mapToDto(updated);
+    }
+
+    public void deleteBook(Long id) {
+        if (!bookRepository.existsById(id)) {
+            throw new RuntimeException("Book not found with id: " + id);
+        }
+        bookRepository.deleteById(id);
+    }
+
+
 
 }

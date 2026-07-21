@@ -5,12 +5,12 @@ import com.example.library.dto.BookResponseDto;
 import com.example.library.service.BookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @RestController
 @RequestMapping("/books")
@@ -31,5 +31,16 @@ public class BookController {
     @ResponseStatus(CREATED)
     public BookResponseDto createBook(@Valid @RequestBody BookRequestDto dto) {
         return bookService.createBook(dto);
+    }
+
+    @PutMapping("/{id}")
+    public BookResponseDto updateBook(@PathVariable Long id, @Valid @RequestBody BookRequestDto dto) {
+        return bookService.updateBook(id, dto);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(NO_CONTENT)
+    public void deleteBook(@PathVariable Long id) {
+        bookService.deleteBook(id);
     }
 }

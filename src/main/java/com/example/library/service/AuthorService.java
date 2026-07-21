@@ -31,4 +31,19 @@ public class AuthorService {
         Author saved = authorRepository.save(AuthorMapper.mapToEntity(dto));
         return AuthorMapper.mapToDto(saved);
     }
+
+    public AuthorResponseDto updateAuthor(Long id, AuthorRequestDto dto) {
+        Author author = authorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Author not found with id: " + id));
+        AuthorMapper.updateEntity(author, dto);
+        Author updated = authorRepository.save(author);
+        return AuthorMapper.mapToDto(updated);
+    }
+
+    public void deleteAuthor(Long id) {
+        if (!authorRepository.existsById(id)) {
+            throw new RuntimeException("Author not found with id: " + id);
+        }
+        authorRepository.deleteById(id);
+    }
 }

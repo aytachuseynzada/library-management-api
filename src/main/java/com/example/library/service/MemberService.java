@@ -32,4 +32,19 @@ public class MemberService {
         return MemberMapper.mapToDto(saved);
     }
 
+    public MemberResponseDto updateMember(Long id, MemberRequestDto dto) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Member not found with id: " + id));
+        MemberMapper.updateEntity(member, dto);
+        Member updated = memberRepository.save(member);
+        return MemberMapper.mapToDto(updated);
+    }
+
+    public void deleteMember(Long id) {
+        if (!memberRepository.existsById(id)) {
+            throw new RuntimeException("Member not found with id: " + id);
+        }
+        memberRepository.deleteById(id);
+    }
+
 }
