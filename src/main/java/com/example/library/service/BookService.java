@@ -6,6 +6,8 @@ import com.example.library.dao.repository.AuthorRepository;
 import com.example.library.dao.repository.BookRepository;
 import com.example.library.dto.BookRequestDto;
 import com.example.library.dto.BookResponseDto;
+import com.example.library.exception.AuthorNotFoundException;
+import com.example.library.exception.BookNotFoundException;
 import com.example.library.mapper.BookMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,22 +28,22 @@ public class BookService {
 
     public BookResponseDto getBookById(Long id) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
+                .orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
         return BookMapper.mapToDto(book);
     }
 
     public BookResponseDto createBook(BookRequestDto dto) {
         Author author = authorRepository.findById(dto.getAuthorId())
-                .orElseThrow(() -> new RuntimeException("Author not found with id: " + dto.getAuthorId()));
+                .orElseThrow(() -> new AuthorNotFoundException("Author not found with id: " + dto.getAuthorId()));
         Book saved = bookRepository.save(BookMapper.mapToEntity(dto, author));
         return BookMapper.mapToDto(saved);
     }
 
     public BookResponseDto updateBook(Long id, BookRequestDto dto) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
+                .orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
         Author author = authorRepository.findById(dto.getAuthorId())
-                .orElseThrow(() -> new RuntimeException("Author not found with id: " + dto.getAuthorId()));
+                .orElseThrow(() -> new AuthorNotFoundException("Author not found with id: " + dto.getAuthorId()));
         BookMapper.updateEntity(book, dto, author);
         Book updated = bookRepository.save(book);
         return BookMapper.mapToDto(updated);
@@ -49,7 +51,7 @@ public class BookService {
 
     public void deleteBook(Long id) {
         if (!bookRepository.existsById(id)) {
-            throw new RuntimeException("Book not found with id: " + id);
+            throw new BookNotFoundException("Book not found with id: " + id);
         }
         bookRepository.deleteById(id);
     }

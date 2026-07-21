@@ -4,6 +4,7 @@ import com.example.library.dao.entity.Author;
 import com.example.library.dao.repository.AuthorRepository;
 import com.example.library.dto.AuthorRequestDto;
 import com.example.library.dto.AuthorResponseDto;
+import com.example.library.exception.AuthorNotFoundException;
 import com.example.library.mapper.AuthorMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class AuthorService {
 
     public AuthorResponseDto getAuthorById(Long id) {
         Author author = authorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Author not found with id: " + id));
+                .orElseThrow(() -> new AuthorNotFoundException("Author not found with id: " + id));
         return AuthorMapper.mapToDto(author);
     }
 
@@ -34,7 +35,7 @@ public class AuthorService {
 
     public AuthorResponseDto updateAuthor(Long id, AuthorRequestDto dto) {
         Author author = authorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Author not found with id: " + id));
+                .orElseThrow(() -> new AuthorNotFoundException("Author not found with id: " + id));
         AuthorMapper.updateEntity(author, dto);
         Author updated = authorRepository.save(author);
         return AuthorMapper.mapToDto(updated);
