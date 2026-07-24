@@ -32,7 +32,7 @@ public class MemberService {
     }
 
     public MemberResponseDto getMemberById(Long id) {
-        Member member = memberRepository.findById(id)
+        Member member = memberRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new MemberNotFoundException("Member not found with id: " + id));
         return MemberMapper.mapToDto(member);
     }
@@ -43,7 +43,7 @@ public class MemberService {
     }
 
     public MemberResponseDto updateMember(Long id, MemberRequestDto dto) {
-        Member member = memberRepository.findById(id)
+        Member member = memberRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new MemberNotFoundException("Member not found with id: " + id));
         MemberMapper.updateEntity(member, dto);
         Member updated = memberRepository.save(member);
@@ -51,7 +51,7 @@ public class MemberService {
     }
 
     public void deleteMember(Long id) {
-        Member member = memberRepository.findById(id)
+        Member member = memberRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() ->
                         new RuntimeException("Member not found with id: " + id));
 

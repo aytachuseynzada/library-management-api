@@ -37,20 +37,20 @@ public class BookService {
     }
 
     public BookResponseDto getBookById(Long id) {
-        Book book = bookRepository.findById(id)
+        Book book = bookRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
         return BookMapper.mapToDto(book);
     }
 
     public BookResponseDto createBook(BookRequestDto dto) {
-        Author author = authorRepository.findById(dto.getAuthorId())
+        Author author = authorRepository.findByIdAndDeletedFalse(dto.getAuthorId())
                 .orElseThrow(() -> new AuthorNotFoundException("Author not found with id: " + dto.getAuthorId()));
         Book saved = bookRepository.save(BookMapper.mapToEntity(dto, author));
         return BookMapper.mapToDto(saved);
     }
 
     public BookResponseDto updateBook(Long id, BookRequestDto dto) {
-        Book book = bookRepository.findById(id)
+        Book book = bookRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
         Author author = authorRepository.findById(dto.getAuthorId())
                 .orElseThrow(() -> new AuthorNotFoundException("Author not found with id: " + dto.getAuthorId()));
@@ -60,7 +60,7 @@ public class BookService {
     }
 
     public void deleteBook(Long id) {
-        Book book = bookRepository.findById(id)
+        Book book = bookRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() ->
                         new RuntimeException("Book not found with id: " + id));
 

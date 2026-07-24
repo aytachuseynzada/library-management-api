@@ -34,7 +34,7 @@ public class AuthorService {
 
 
     public AuthorResponseDto getAuthorById(Long id) {
-        Author author = authorRepository.findById(id)
+        Author author = authorRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new AuthorNotFoundException("Author not found with id: " + id));
         return AuthorMapper.mapToDto(author);
     }
@@ -45,7 +45,7 @@ public class AuthorService {
     }
 
     public AuthorResponseDto updateAuthor(Long id, AuthorRequestDto dto) {
-        Author author = authorRepository.findById(id)
+        Author author = authorRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new AuthorNotFoundException("Author not found with id: " + id));
         AuthorMapper.updateEntity(author, dto);
         Author updated = authorRepository.save(author);
@@ -53,7 +53,7 @@ public class AuthorService {
     }
 
     public void deleteAuthor(Long id) {
-        Author author = authorRepository.findById(id)
+        Author author = authorRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() ->
                         new RuntimeException("Author not found with id: " + id));
 
