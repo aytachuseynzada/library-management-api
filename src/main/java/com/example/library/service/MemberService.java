@@ -53,7 +53,7 @@ public class MemberService {
     public void deleteMember(Long id) {
         Member member = memberRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Member not found with id: " + id));
+                        new MemberNotFoundException("Member not found with id: " + id));
 
         member.setDeleted(true);
 

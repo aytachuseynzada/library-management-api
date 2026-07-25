@@ -62,7 +62,7 @@ public class BookService {
     public void deleteBook(Long id) {
         Book book = bookRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Book not found with id: " + id));
+                        new BookNotFoundException("Book not found with id: " + id));
 
         book.setDeleted(true);
 
