@@ -34,4 +34,9 @@ public class GlobalHandlerException {
     public ErrorResponse handleException(MethodArgumentNotValidException ex) {
         return new ErrorResponse("validation.failed", ex.getBindingResult().getFieldError().getDefaultMessage());
     }
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ErrorResponse handleException(IllegalArgumentException ex) {
+        return new ErrorResponse("invalid.sort.field", ex.getMessage());
+    }
 }

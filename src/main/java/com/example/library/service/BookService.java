@@ -23,8 +23,20 @@ import java.util.List;
 public class BookService {
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
+    private static final List<String> ALLOWED_SORT_FIELDS =
+            List.of("id", "title", "isbn", "price", "publishedYear");
+    private static final int MAX_PAGE_SIZE = 100;
+
 
     public Page<BookResponseDto> getAllBooks(int page, int size, String sortBy, String direction) {
+
+        if (size <= 0 || size > MAX_PAGE_SIZE) {
+            throw new IllegalArgumentException("Page size must be between 1 and 100");
+        }
+
+        if (!ALLOWED_SORT_FIELDS.contains(sortBy)) {
+            throw new IllegalArgumentException("Invalid sort field: " + sortBy);
+        }
 
         Sort sort = direction.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()

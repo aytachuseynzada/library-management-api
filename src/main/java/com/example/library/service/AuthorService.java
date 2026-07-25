@@ -19,8 +19,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthorService {
     private final AuthorRepository authorRepository;
+    private static final List<String> ALLOWED_SORT_FIELDS =
+            List.of("id", "name", "bio");
+    private static final int MAX_PAGE_SIZE = 100;
+
 
     public Page<AuthorResponseDto> getAllAuthors(int page, int size, String sortBy, String direction) {
+
+        if (size <= 0 || size > MAX_PAGE_SIZE) {
+            throw new IllegalArgumentException("Page size must be between 1 and 100");
+        }
+
+        if (!ALLOWED_SORT_FIELDS.contains(sortBy)) {
+            throw new IllegalArgumentException("Invalid sort field: " + sortBy);
+        }
 
         Sort sort = direction.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()
@@ -31,7 +43,6 @@ public class AuthorService {
         return authorRepository.findAllByDeletedFalse(pageable)
                 .map(AuthorMapper::mapToDto);
     }
-
 
     public AuthorResponseDto getAuthorById(Long id) {
         Author author = authorRepository.findByIdAndDeletedFalse(id)
