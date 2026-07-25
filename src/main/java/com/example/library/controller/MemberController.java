@@ -35,23 +35,35 @@ public class MemberController {
 
         return memberService.getAllMembers(page, size, sortBy, direction);
     }
-
+    @Operation(
+            summary = "Get member by id",
+            description = "Returns a single member by its identifier"
+    )
     @GetMapping("/{id}")
     public MemberResponseDto getMemberById(@PathVariable Long id) {
         return memberService.getMemberById(id);
     }
-
+    @Operation(
+            summary = "Create new member",
+            description = "Creates a new member and returns created data"
+    )
     @PostMapping
     @ResponseStatus(CREATED)
     public MemberResponseDto createMember(@Valid @RequestBody MemberRequestDto dto) {
         return memberService.createMember(dto);
     }
-
+    @Operation(
+            summary = "Update member",
+            description = "Updates existing member information"
+    )
     @PutMapping("/{id}")
     public MemberResponseDto updateMember(@PathVariable Long id, @Valid @RequestBody MemberRequestDto dto) {
         return memberService.updateMember(id, dto);
     }
-
+    @Operation(
+            summary = "Delete member",
+            description = "Performs soft delete for a member"
+    )
     @DeleteMapping("/{id}")
     @ResponseStatus(NO_CONTENT)
     public void deleteMember(@PathVariable Long id) {

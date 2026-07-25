@@ -35,23 +35,35 @@ public class BookController {
 
         return bookService.getAllBooks(page, size, sortBy, direction);
     }
-
+    @Operation(
+            summary = "Get book by id",
+            description = "Returns a single book by its identifier"
+    )
     @GetMapping("/{id}")
     public BookResponseDto getBookById(@PathVariable Long id) {
         return bookService.getBookById(id);
     }
-
+    @Operation(
+            summary = "Create new book",
+            description = "Creates a new book and returns created data"
+    )
     @PostMapping
     @ResponseStatus(CREATED)
     public BookResponseDto createBook(@Valid @RequestBody BookRequestDto dto) {
         return bookService.createBook(dto);
     }
-
+    @Operation(
+            summary = "Update book",
+            description = "Updates existing book information"
+    )
     @PutMapping("/{id}")
     public BookResponseDto updateBook(@PathVariable Long id, @Valid @RequestBody BookRequestDto dto) {
         return bookService.updateBook(id, dto);
     }
-
+    @Operation(
+            summary = "Delete book",
+            description = "Performs soft delete for a book"
+    )
     @DeleteMapping("/{id}")
     @ResponseStatus(NO_CONTENT)
     public void deleteBook(@PathVariable Long id) {
