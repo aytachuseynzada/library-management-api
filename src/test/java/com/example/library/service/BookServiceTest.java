@@ -1,5 +1,6 @@
 package com.example.library.service;
 
+import com.example.library.dao.entity.Author;
 import com.example.library.dao.entity.Book;
 import com.example.library.dao.repository.AuthorRepository;
 import com.example.library.dao.repository.BookRepository;
@@ -39,20 +40,20 @@ class BookServiceTest {
 
     @Test
     void shouldReturnBooksWithPagination() {
+        Author author = new Author();
+        author.setId(1L);
+        author.setName("Robert C. Martin");
 
         Book book = new Book();
         book.setId(1L);
         book.setTitle("Clean Code");
+        book.setAuthor(author);
         book.setDeleted(false);
 
-
-        Page<Book> bookPage =
-                new PageImpl<>(List.of(book));
-
+        Page<Book> bookPage = new PageImpl<>(List.of(book));
 
         when(bookRepository.findAllByDeletedFalse(any(Pageable.class)))
                 .thenReturn(bookPage);
-
 
         Page<BookResponseDto> result =
                 bookService.getAllBooks(
@@ -62,13 +63,8 @@ class BookServiceTest {
                         "asc"
                 );
 
-
         assertEquals(1, result.getContent().size());
-        assertEquals(
-                "Clean Code",
-                result.getContent().get(0).getTitle()
-        );
-
+        assertEquals("Clean Code", result.getContent().get(0).getTitle());
 
         verify(bookRepository)
                 .findAllByDeletedFalse(any(Pageable.class));

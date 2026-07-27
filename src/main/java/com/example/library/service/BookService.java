@@ -64,7 +64,7 @@ public class BookService {
     public BookResponseDto updateBook(Long id, BookRequestDto dto) {
         Book book = bookRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
-        Author author = authorRepository.findById(dto.getAuthorId())
+        Author author = authorRepository.findByIdAndDeletedFalse(dto.getAuthorId())
                 .orElseThrow(() -> new AuthorNotFoundException("Author not found with id: " + dto.getAuthorId()));
         BookMapper.updateEntity(book, dto, author);
         Book updated = bookRepository.save(book);
