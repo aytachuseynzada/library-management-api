@@ -19,8 +19,10 @@ public class Author {
     private Long id;
     private String name;
     private String bio;
+    @Builder.Default
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Book> books = new ArrayList<>();
+    @Builder.Default
     @Column(nullable = false)
     private boolean deleted = false;
 }

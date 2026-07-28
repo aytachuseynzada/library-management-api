@@ -18,5 +18,6 @@ public class Member {
     private String email;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean deleted = false;
 }

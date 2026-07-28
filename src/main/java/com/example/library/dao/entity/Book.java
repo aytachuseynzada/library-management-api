@@ -25,5 +25,6 @@ public class Book {
     private Author author;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean deleted = false;
 }

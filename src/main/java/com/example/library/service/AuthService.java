@@ -5,9 +5,11 @@ import com.example.library.dao.repository.UserRepository;
 import com.example.library.dto.AuthResponseDto;
 import com.example.library.dto.LoginRequestDto;
 import com.example.library.dto.RegisterRequestDto;
+import com.example.library.exception.UsernameAlreadyExistsException;
 import com.example.library.mapper.UserMapper;
 import com.example.library.security.JWTService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,9 @@ public class AuthService {
     private final JWTService jwtService;
 
     public void register(RegisterRequestDto dto){
+        if(userRepository.findByUsername(dto.getUsername()).isPresent()){
+            throw new UsernameAlreadyExistsException("Username already exists");
+        }
 
         User user = UserMapper.mapToEntity(
                 dto,
@@ -33,15 +38,19 @@ public class AuthService {
 
         User user = userRepository.findByUsername(dto.getUsername())
                 .orElseThrow(
-                        () -> new RuntimeException("Invalid credentials")
+                        () -> new BadCredentialsException("Invalid username or password")
                 );
 
+        System.out.println("Found user: " + user.getUsername());
+        System.out.println("Stored hash: " + user.getPassword());
+        System.out.println("Raw password entered: " + dto.getPassword());
+        System.out.println("Matches: " + passwordEncoder.matches(dto.getPassword(), user.getPassword()));
 
         if(!passwordEncoder.matches(
                 dto.getPassword(),
                 user.getPassword()
         )){
-            throw new RuntimeException("Invalid credentials");
+            throw new BadCredentialsException("Invalid username or password");
         }
 
 

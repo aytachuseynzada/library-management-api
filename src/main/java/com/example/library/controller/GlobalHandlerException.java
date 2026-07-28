@@ -1,8 +1,6 @@
 package com.example.library.controller;
 
-import com.example.library.exception.AuthorNotFoundException;
-import com.example.library.exception.BookNotFoundException;
-import com.example.library.exception.MemberNotFoundException;
+import com.example.library.exception.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,5 +36,15 @@ public class GlobalHandlerException {
     @ExceptionHandler(IllegalArgumentException.class)
     public ErrorResponse handleException(IllegalArgumentException ex) {
         return new ErrorResponse("invalid.sort.field", ex.getMessage());
+    }
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(BadCredentialsException.class)
+    public ErrorResponse handleException(BadCredentialsException ex) {
+        return new ErrorResponse("invalid.credentials", "Username or password is incorrect");
+    }
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ErrorResponse handleException(UsernameAlreadyExistsException ex) {
+        return new ErrorResponse("username.already.exists", ex.getMessage());
     }
 }
