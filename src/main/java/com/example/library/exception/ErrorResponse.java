@@ -1,4 +1,4 @@
-package com.example.library.controller;
+package com.example.library.exception;
 
 import lombok.Data;
 
