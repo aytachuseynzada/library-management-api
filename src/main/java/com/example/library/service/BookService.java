@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -79,5 +80,23 @@ public class BookService {
         book.setDeleted(true);
 
         bookRepository.save(book);
+    }
+    public List<BookResponseDto> searchBooks(Integer startYear, Integer endYear, String title, String authorName) {
+
+        List<Book> books;
+
+        if (authorName != null && !authorName.isBlank()) {
+            books = bookRepository.findByAuthorName(authorName);
+        } else if (title != null && !title.isBlank()) {
+            books = bookRepository.findByTitleContainingIgnoreCaseAndDeletedFalse(title);
+        } else if (startYear != null && endYear != null) {
+            books = bookRepository.findByPublishedYearBetweenAndDeletedFalse(startYear, endYear);
+        } else {
+            throw new IllegalArgumentException("At least one filter must be provided: title, authorName, or (startYear and endYear)");
+        }
+
+        return books.stream()
+                .map(BookMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 }

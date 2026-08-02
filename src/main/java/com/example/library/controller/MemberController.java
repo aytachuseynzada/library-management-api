@@ -69,4 +69,12 @@ public class MemberController {
     public void deleteMember(@PathVariable Long id) {
         memberService.deleteMember(id);
     }
+    @Operation(
+            summary = "Get member by email",
+            description = "Returns a single member by their email address"
+    )
+    @GetMapping("/search")
+    public MemberResponseDto getMemberByEmail(@RequestParam String email) {
+        return memberService.getMemberByEmail(email);
+    }
 }

@@ -73,5 +73,9 @@ public class MemberService {
 
         memberRepository.save(member);
     }
-
+    public MemberResponseDto getMemberByEmail(String email) {
+        Member member = memberRepository.findByEmailAndDeletedFalse(email)
+                .orElseThrow(() -> new MemberNotFoundException("Member not found with email: " + email));
+        return MemberMapper.mapToDto(member);
+    }
 }

@@ -44,6 +44,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/authors/**", "/books/**", "/members/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/authors/**", "/books/**", "/members/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/authors/**", "/books/**", "/members/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/loans/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/loans/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
