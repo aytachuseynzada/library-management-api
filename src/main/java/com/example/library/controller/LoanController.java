@@ -7,8 +7,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -59,5 +61,19 @@ public class LoanController {
     @GetMapping("/overdue")
     public List<LoanResponseDto> getOverdueLoans() {
         return loanService.getOverdueLoans();
+    }
+    @Operation(
+            summary = "Search loans",
+            description = "Dynamically search loans by member, book, overdue status, and borrow date range"
+    )
+    @GetMapping("/search")
+    public List<LoanResponseDto> searchLoans(
+            @RequestParam(required = false) Long memberId,
+            @RequestParam(required = false) Long bookId,
+            @RequestParam(required = false) Boolean overdue,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+        return loanService.searchLoans(memberId, bookId, overdue, startDate, endDate);
     }
 }

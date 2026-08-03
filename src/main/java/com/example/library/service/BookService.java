@@ -9,11 +9,13 @@ import com.example.library.dto.BookResponseDto;
 import com.example.library.exception.AuthorNotFoundException;
 import com.example.library.exception.BookNotFoundException;
 import com.example.library.mapper.BookMapper;
+import com.example.library.specification.BookSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -83,17 +85,12 @@ public class BookService {
     }
     public List<BookResponseDto> searchBooks(Integer startYear, Integer endYear, String title, String authorName) {
 
-        List<Book> books;
+        Specification<Book> spec = Specification.where(BookSpecification.isNotDeleted())
+                .and(BookSpecification.hasTitle(title))
+                .and(BookSpecification.hasAuthorName(authorName))
+                .and(BookSpecification.publishedBetween(startYear, endYear));
 
-        if (authorName != null && !authorName.isBlank()) {
-            books = bookRepository.findByAuthorName(authorName);
-        } else if (title != null && !title.isBlank()) {
-            books = bookRepository.findByTitleContainingIgnoreCaseAndDeletedFalse(title);
-        } else if (startYear != null && endYear != null) {
-            books = bookRepository.findByPublishedYearBetweenAndDeletedFalse(startYear, endYear);
-        } else {
-            throw new IllegalArgumentException("At least one filter must be provided: title, authorName, or (startYear and endYear)");
-        }
+        List<Book> books = bookRepository.findAll(spec);
 
         return books.stream()
                 .map(BookMapper::mapToDto)
