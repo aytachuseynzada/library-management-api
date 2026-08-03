@@ -9,13 +9,16 @@ import com.example.library.dao.repository.MemberRepository;
 import com.example.library.dto.LoanResponseDto;
 import com.example.library.dto.LoanRequestDto;
 import com.example.library.exception.BookNotFoundException;
+import com.example.library.exception.LoanNotFoundException;
 import com.example.library.exception.MemberNotFoundException;
 import com.example.library.mapper.LoanMapper;
 import com.example.library.specification.LoanSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,5 +75,26 @@ public class LoanService {
         return loans.stream()
                 .map(LoanMapper::mapToDto)
                 .collect(Collectors.toList());
+    }
+    @Transactional
+    public LoanResponseDto returnBook(Long loanId) {
+
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() -> new LoanNotFoundException("Loan not found with id: " + loanId));
+
+        if (loan.getReturnDate() != null) {
+            throw new IllegalStateException("This book has already been returned");
+        }
+
+        loan.setReturnDate(LocalDate.now());
+        loanRepository.save(loan);
+
+        if (loan.getDueDate().isBefore(LocalDate.now())) {
+            Member member = loan.getMember();
+            member.setFineBalance(member.getFineBalance().add(BigDecimal.valueOf(5)));
+            memberRepository.save(member);
+        }
+
+        return LoanMapper.mapToDto(loan);
     }
 }

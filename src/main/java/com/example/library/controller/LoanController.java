@@ -76,4 +76,12 @@ public class LoanController {
 
         return loanService.searchLoans(memberId, bookId, overdue, startDate, endDate);
     }
+    @Operation(
+            summary = "Return a book",
+            description = "Marks a loan as returned; applies a fine if returned late"
+    )
+    @PutMapping("/{id}/return")
+    public LoanResponseDto returnBook(@PathVariable Long id) {
+        return loanService.returnBook(id);
+    }
 }

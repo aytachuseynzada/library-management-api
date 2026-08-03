@@ -3,6 +3,7 @@ package com.example.library.dao.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,4 +38,8 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Loan> loans = new ArrayList<>();
+
+    @Builder.Default
+    @Column(nullable = false)
+    private BigDecimal fineBalance = BigDecimal.ZERO;
 }

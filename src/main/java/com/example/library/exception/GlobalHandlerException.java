@@ -1,6 +1,5 @@
-package com.example.library.controller;
+package com.example.library.exception;
 
-import com.example.library.exception.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -45,5 +44,15 @@ public class GlobalHandlerException {
     @ExceptionHandler(UsernameAlreadyExistsException.class)
     public ErrorResponse handleException(UsernameAlreadyExistsException ex) {
         return new ErrorResponse("username.already.exists", ex.getMessage());
+    }
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(LoanNotFoundException.class)
+    public ErrorResponse handleException(LoanNotFoundException ex){
+        return new ErrorResponse("loan.not.found", ex.getMessage());
+    }
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(IllegalStateException.class)
+    public ErrorResponse handleException(IllegalStateException ex) {
+        return new ErrorResponse("invalid.state", ex.getMessage());
     }
 }
