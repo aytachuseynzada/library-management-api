@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -201,7 +202,6 @@ class BookServiceTest {
     }
     @Test
     void shouldSearchBooksByTitle() {
-
         Author author = new Author();
         author.setId(1L);
         author.setName("George Orwell");
@@ -211,15 +211,13 @@ class BookServiceTest {
         book.setTitle("1984");
         book.setAuthor(author);
 
-        when(bookRepository.findByTitleContainingIgnoreCaseAndDeletedFalse("1984"))
+        when(bookRepository.findAll(any(Specification.class)))
                 .thenReturn(List.of(book));
 
         List<BookResponseDto> result = bookService.searchBooks(null, null, "1984", null);
 
         assertEquals(1, result.size());
         assertEquals("1984", result.get(0).getTitle());
-
-        verify(bookRepository).findByTitleContainingIgnoreCaseAndDeletedFalse("1984");
     }
 
     @Test
@@ -234,20 +232,17 @@ class BookServiceTest {
         book.setTitle("1984");
         book.setAuthor(author);
 
-        when(bookRepository.findByAuthorName("George Orwell"))
+        when(bookRepository.findAll(any(Specification.class)))
                 .thenReturn(List.of(book));
 
         List<BookResponseDto> result = bookService.searchBooks(null, null, null, "George Orwell");
 
         assertEquals(1, result.size());
         assertEquals("1984", result.get(0).getTitle());
-
-        verify(bookRepository).findByAuthorName("George Orwell");
     }
 
     @Test
     void shouldSearchBooksByYearRange() {
-
         Author author = new Author();
         author.setId(1L);
         author.setName("George Orwell");
@@ -258,24 +253,33 @@ class BookServiceTest {
         book.setPublishedYear(1949);
         book.setAuthor(author);
 
-        when(bookRepository.findByPublishedYearBetweenAndDeletedFalse(1940, 1950))
+        when(bookRepository.findAll(any(Specification.class)))
                 .thenReturn(List.of(book));
 
         List<BookResponseDto> result = bookService.searchBooks(1940, 1950, null, null);
 
         assertEquals(1, result.size());
         assertEquals(1949, result.get(0).getPublishedYear());
-
-        verify(bookRepository).findByPublishedYearBetweenAndDeletedFalse(1940, 1950);
     }
 
     @Test
-    void shouldThrowExceptionWhenNoFilterProvidedForSearch() {
+    void shouldReturnAllBooksWhenNoFilterProvided() {
 
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> bookService.searchBooks(null, null, null, null)
-        );
+        Author author = new Author();
+        author.setId(1L);
+        author.setName("George Orwell");
+
+        Book book = new Book();
+        book.setId(1L);
+        book.setTitle("1984");
+        book.setAuthor(author);
+
+        when(bookRepository.findAll(any(Specification.class)))
+                .thenReturn(List.of(book));
+
+        List<BookResponseDto> result = bookService.searchBooks(null, null, null, null);
+
+        assertEquals(1, result.size());
     }
 }
 

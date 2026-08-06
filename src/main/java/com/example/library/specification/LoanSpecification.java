@@ -1,6 +1,8 @@
 package com.example.library.specification;
 
+import com.example.library.dao.entity.Book;
 import com.example.library.dao.entity.Loan;
+import jakarta.persistence.criteria.Fetch;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
@@ -56,4 +58,14 @@ public final class LoanSpecification {
             return cb.lessThanOrEqualTo(root.get("borrowDate"), endDate);
         };
     }
+    public static Specification<Loan> fetchBookAndMember() {
+            return (root, query, cb) -> {
+                if (Long.class != query.getResultType()) {
+                    Fetch<Loan, Book> bookFetch = root.fetch("book");
+                    bookFetch.fetch("author");
+                    root.fetch("member");
+                }
+                return cb.conjunction();
+            };
+        }
 }

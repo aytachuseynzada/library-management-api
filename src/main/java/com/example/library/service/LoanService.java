@@ -68,7 +68,8 @@ public class LoanService {
         Specification<Loan> spec = Specification.where(LoanSpecification.hasMemberId(memberId))
                 .and(LoanSpecification.hasBookId(bookId))
                 .and(LoanSpecification.isOverdue(overdue))
-                .and(LoanSpecification.borrowedBetween(startDate, endDate));
+                .and(LoanSpecification.borrowedBetween(startDate, endDate))
+                .and(LoanSpecification.fetchBookAndMember());
 
         List<Loan> loans = loanRepository.findAll(spec);
 
