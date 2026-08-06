@@ -59,13 +59,15 @@ public final class LoanSpecification {
         };
     }
     public static Specification<Loan> fetchBookAndMember() {
-            return (root, query, cb) -> {
-                if (Long.class != query.getResultType()) {
-                    Fetch<Loan, Book> bookFetch = root.fetch("book");
-                    bookFetch.fetch("author");
-                    root.fetch("member");
-                }
-                return cb.conjunction();
-            };
-        }
+        return (root, query, cb) -> {
+            if (Long.class != query.getResultType()) {
+                query.distinct(true);
+
+                Fetch<Loan, Book> bookFetch = root.fetch("book");
+                bookFetch.fetch("author");
+                root.fetch("member");
+            }
+            return cb.conjunction();
+        };
+    }
 }

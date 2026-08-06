@@ -80,12 +80,18 @@ public class LoanService {
     @Transactional
     public LoanResponseDto returnBook(Long loanId) {
 
-        Loan loan = loanRepository.findById(loanId)
-                .orElseThrow(() -> new LoanNotFoundException("Loan not found with id: " + loanId));
+            Loan loan = loanRepository.findById(loanId)
+                    .orElseThrow(() -> new LoanNotFoundException("Loan not found with id: " + loanId));
 
-        if (loan.getReturnDate() != null) {
-            throw new IllegalStateException("This book has already been returned");
+            if (loan.getReturnDate() != null) {
+                throw new IllegalStateException("This book has already been returned");
+            }
+
+            processReturn(loan);
+
+            return LoanMapper.mapToDto(loan);
         }
+    protected void processReturn(Loan loan) {
 
         loan.setReturnDate(LocalDate.now());
         loanRepository.save(loan);
@@ -95,7 +101,5 @@ public class LoanService {
             member.setFineBalance(member.getFineBalance().add(BigDecimal.valueOf(5)));
             memberRepository.save(member);
         }
-
-        return LoanMapper.mapToDto(loan);
     }
 }
