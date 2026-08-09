@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -27,4 +29,12 @@ public class Book {
     @Column(nullable = false)
     @Builder.Default
     private boolean deleted = false;
+
+    @ManyToMany(mappedBy = "favoriteBooks")
+    @Builder.Default
+    private List<Member> favoritedByMembers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Loan> loans = new ArrayList<>();
 }

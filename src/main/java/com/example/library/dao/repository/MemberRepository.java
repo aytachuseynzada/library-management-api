@@ -12,4 +12,6 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member,Long> {
     Page<Member> findAllByDeletedFalse(Pageable pageable);
     Optional<Member> findByIdAndDeletedFalse(Long id);
+
+    Optional<Member> findByEmailAndDeletedFalse(String email);
 }

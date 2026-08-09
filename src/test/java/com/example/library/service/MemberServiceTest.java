@@ -173,5 +173,34 @@ class MemberServiceTest {
                 () -> memberService.deleteMember(1L)
         );
     }
+    @Test
+    void shouldReturnMemberByEmail() {
+
+        Member member = new Member();
+        member.setId(1L);
+        member.setName("Ali");
+        member.setEmail("ali@gmail.com");
+
+        when(memberRepository.findByEmailAndDeletedFalse("ali@gmail.com"))
+                .thenReturn(Optional.of(member));
+
+        MemberResponseDto result = memberService.getMemberByEmail("ali@gmail.com");
+
+        assertEquals("Ali", result.getName());
+
+        verify(memberRepository).findByEmailAndDeletedFalse("ali@gmail.com");
+    }
+
+    @Test
+    void shouldThrowMemberNotFoundExceptionWhenEmailDoesNotExist() {
+
+        when(memberRepository.findByEmailAndDeletedFalse("notfound@gmail.com"))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                MemberNotFoundException.class,
+                () -> memberService.getMemberByEmail("notfound@gmail.com")
+        );
+    }
 }
 

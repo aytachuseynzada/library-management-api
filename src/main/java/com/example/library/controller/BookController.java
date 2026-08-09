@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
@@ -68,5 +70,18 @@ public class BookController {
     @ResponseStatus(NO_CONTENT)
     public void deleteBook(@PathVariable Long id) {
         bookService.deleteBook(id);
+    }
+    @Operation(
+            summary = "Search books",
+            description = "Search books by title, author name, or published year range"
+    )
+    @GetMapping("/search")
+    public List<BookResponseDto> searchBooks(
+            @RequestParam(required = false) Integer startYear,
+            @RequestParam(required = false) Integer endYear,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String authorName) {
+
+        return bookService.searchBooks(startYear, endYear, title, authorName);
     }
 }

@@ -9,14 +9,17 @@ import com.example.library.dto.BookResponseDto;
 import com.example.library.exception.AuthorNotFoundException;
 import com.example.library.exception.BookNotFoundException;
 import com.example.library.mapper.BookMapper;
+import com.example.library.specification.BookSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -79,5 +82,18 @@ public class BookService {
         book.setDeleted(true);
 
         bookRepository.save(book);
+    }
+    public List<BookResponseDto> searchBooks(Integer startYear, Integer endYear, String title, String authorName) {
+
+        Specification<Book> spec = Specification.where(BookSpecification.isNotDeleted())
+                .and(BookSpecification.hasTitle(title))
+                .and(BookSpecification.hasAuthorName(authorName))
+                .and(BookSpecification.publishedBetween(startYear, endYear));
+
+        List<Book> books = bookRepository.findAll(spec);
+
+        return books.stream()
+                .map(BookMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 }
