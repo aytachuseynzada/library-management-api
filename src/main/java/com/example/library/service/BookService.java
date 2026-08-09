@@ -11,6 +11,7 @@ import com.example.library.exception.BookNotFoundException;
 import com.example.library.mapper.BookMapper;
 import com.example.library.specification.BookSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -50,7 +51,7 @@ public class BookService {
         return bookRepository.findAllByDeletedFalse(pageable)
                 .map(BookMapper::mapToDto);
     }
-
+    @Cacheable(value = "books", key = "#id")
     public BookResponseDto getBookById(Long id) {
         Book book = bookRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
