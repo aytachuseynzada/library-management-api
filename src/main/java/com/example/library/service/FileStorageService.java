@@ -1,5 +1,6 @@
 package com.example.library.service;
 
+import com.example.library.exception.FileTooLargeException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,7 +25,7 @@ public class FileStorageService {
         }
 
         if (file.getSize() > MAX_FILE_SIZE) {
-            throw new IllegalArgumentException("File size exceeds maximum limit of 5MB");
+            throw new FileTooLargeException("File size exceeds maximum limit of 5MB");
         }
 
         String contentType = file.getContentType();
