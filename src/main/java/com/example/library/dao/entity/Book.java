@@ -30,6 +30,8 @@ public class Book {
     @Builder.Default
     private boolean deleted = false;
 
+    private String coverImagePath;
+
     @ManyToMany(mappedBy = "favoriteBooks")
     @Builder.Default
     private List<Member> favoritedByMembers = new ArrayList<>();

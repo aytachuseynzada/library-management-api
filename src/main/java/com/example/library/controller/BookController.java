@@ -8,7 +8,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -83,5 +86,31 @@ public class BookController {
             @RequestParam(required = false) String authorName) {
 
         return bookService.searchBooks(startYear, endYear, title, authorName);
+    }
+    @Operation(
+            summary = "Upload book cover image",
+            description = "Uploads a cover image (JPG/PNG, max 5MB) for a book"
+    )
+    @PostMapping(value = "/{id}/cover", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadCoverImage(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) {
+
+        String filePath = bookService.uploadCoverImage(id, file);
+        return ResponseEntity.ok("Cover image uploaded successfully: " + filePath);
+    }
+
+    @Operation(
+            summary = "Download book cover image",
+            description = "Downloads the cover image of a book"
+    )
+    @GetMapping("/{id}/cover")
+    public ResponseEntity<byte[]> downloadCoverImage(@PathVariable Long id) {
+
+        byte[] imageData = bookService.downloadCoverImage(id);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(imageData);
     }
 }

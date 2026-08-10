@@ -33,7 +33,7 @@ public class GlobalHandlerException {
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
     public ErrorResponse handleException(IllegalArgumentException ex) {
-        return new ErrorResponse("invalid.sort.field", ex.getMessage());
+        return new ErrorResponse("invalid.argument", ex.getMessage());
     }
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(BadCredentialsException.class)

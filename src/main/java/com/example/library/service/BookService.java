@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 public class BookService {
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
+    private final FileStorageService fileStorageService;
     private static final List<String> ALLOWED_SORT_FIELDS =
             List.of("id", "title", "isbn", "price", "publishedYear");
     private static final int MAX_PAGE_SIZE = 100;
@@ -96,5 +98,29 @@ public class BookService {
         return books.stream()
                 .map(BookMapper::mapToDto)
                 .collect(Collectors.toList());
+    }
+    public String uploadCoverImage(Long bookId, MultipartFile file) {
+
+        Book book = bookRepository.findByIdAndDeletedFalse(bookId)
+                .orElseThrow(() -> new BookNotFoundException("Book not found with id: " + bookId));
+
+        String filePath = fileStorageService.storeFile(file);
+
+        book.setCoverImagePath(filePath);
+        bookRepository.save(book);
+
+        return filePath;
+    }
+
+    public byte[] downloadCoverImage(Long bookId) {
+
+        Book book = bookRepository.findByIdAndDeletedFalse(bookId)
+                .orElseThrow(() -> new BookNotFoundException("Book not found with id: " + bookId));
+
+        if (book.getCoverImagePath() == null) {
+            throw new IllegalStateException("This book has no cover image");
+        }
+
+        return fileStorageService.loadFile(book.getCoverImagePath());
     }
 }
