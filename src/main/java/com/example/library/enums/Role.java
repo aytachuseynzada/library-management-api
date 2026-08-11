@@ -1,4 +1,4 @@
-package com.example.library.dao.entity;
+package com.example.library.enums;
 
 public enum Role {
     USER,

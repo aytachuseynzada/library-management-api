@@ -1,6 +1,6 @@
 package com.example.library.mapper;
 
-import com.example.library.dao.entity.Role;
+import com.example.library.enums.Role;
 import com.example.library.dao.entity.User;
 import com.example.library.dto.RegisterRequestDto;
 

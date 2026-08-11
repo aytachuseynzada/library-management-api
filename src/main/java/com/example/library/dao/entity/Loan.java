@@ -1,5 +1,6 @@
 package com.example.library.dao.entity;
 
+import com.example.library.enums.LoanStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,6 +29,11 @@ public class Loan {
     private LocalDate borrowDate;
     private LocalDate dueDate;
     private LocalDate returnDate;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    @Column(nullable = false)
+    private LoanStatus status = LoanStatus.ACTIVE;
 
     @Builder.Default
     @Column(nullable = false)

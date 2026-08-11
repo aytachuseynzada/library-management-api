@@ -8,6 +8,7 @@ import com.example.library.dao.repository.LoanRepository;
 import com.example.library.dao.repository.MemberRepository;
 import com.example.library.dto.LoanResponseDto;
 import com.example.library.dto.LoanRequestDto;
+import com.example.library.enums.LoanStatus;
 import com.example.library.exception.BookNotFoundException;
 import com.example.library.exception.LoanNotFoundException;
 import com.example.library.exception.MemberNotFoundException;
@@ -80,20 +81,25 @@ public class LoanService {
     @Transactional
     public LoanResponseDto returnBook(Long loanId) {
 
-            Loan loan = loanRepository.findById(loanId)
-                    .orElseThrow(() -> new LoanNotFoundException("Loan not found with id: " + loanId));
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() -> new LoanNotFoundException("Loan not found with id: " + loanId));
 
-            if (loan.getReturnDate() != null) {
-                throw new IllegalStateException("This book has already been returned");
-            }
-
-            processReturn(loan);
-
-            return LoanMapper.mapToDto(loan);
+        if (loan.getReturnDate() != null) {
+            throw new IllegalStateException("This book has already been returned");
         }
+
+        if (loan.getStatus() == LoanStatus.LOST) {
+            throw new IllegalStateException("This book has been marked as lost and cannot be returned through this process");
+        }
+
+        processReturn(loan);
+
+        return LoanMapper.mapToDto(loan);
+    }
     protected void processReturn(Loan loan) {
 
         loan.setReturnDate(LocalDate.now());
+        loan.setStatus(LoanStatus.RETURNED);
         loanRepository.save(loan);
 
         if (loan.getDueDate().isBefore(LocalDate.now())) {

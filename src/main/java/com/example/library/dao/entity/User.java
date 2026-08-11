@@ -1,5 +1,6 @@
 package com.example.library.dao.entity;
 
+import com.example.library.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
