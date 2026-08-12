@@ -21,6 +21,7 @@ public interface LoanRepository extends JpaRepository<Loan, Long>, JpaSpecificat
     @Query("SELECT l FROM Loan l WHERE l.returnDate IS NULL AND l.dueDate < :today")
     List<Loan> findOverdueLoans(@Param("today") LocalDate today);
 
+    @EntityGraph(attributePaths = {"book", "member"})
     @Query("SELECT l FROM Loan l WHERE l.status = 'ACTIVE' AND l.returnDate IS NULL AND l.dueDate < :cutoffDate")
     List<Loan> findLoansOverdueBeyond(@Param("cutoffDate") LocalDate cutoffDate);
 }

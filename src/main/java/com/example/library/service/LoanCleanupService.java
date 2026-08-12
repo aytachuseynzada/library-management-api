@@ -1,6 +1,7 @@
 package com.example.library.service;
 
 import com.example.library.dao.entity.Loan;
+import com.example.library.enums.LoanStatus;
 import com.example.library.dao.entity.Member;
 import com.example.library.dao.repository.LoanRepository;
 import com.example.library.dao.repository.MemberRepository;
@@ -19,6 +20,7 @@ public class LoanCleanupService {
 
     private final LoanRepository loanRepository;
     private final MemberRepository memberRepository;
+    private final NotificationService notificationService;
 
     private static final int LOST_THRESHOLD_DAYS = 90;
     private static final BigDecimal LOST_BOOK_FINE = BigDecimal.valueOf(50);
@@ -31,7 +33,7 @@ public class LoanCleanupService {
         log.info("Found {} loans overdue beyond {} days", overdueLoans.size(), LOST_THRESHOLD_DAYS);
 
         for (Loan loan : overdueLoans) {
-            loan.setStatus(com.example.library.enums.LoanStatus.LOST);
+            loan.setStatus(LoanStatus.LOST);
             loanRepository.save(loan);
 
             Member member = loan.getMember();
@@ -40,6 +42,10 @@ public class LoanCleanupService {
 
             log.info("Loan id={} marked as LOST, member id={} fined {}",
                     loan.getId(), member.getId(), LOST_BOOK_FINE);
+
+            notificationService.sendLostBookNotification(member, loan.getBook().getTitle());
         }
+
+        log.info("Loan cleanup task finished, notifications dispatched asynchronously");
     }
 }
