@@ -11,6 +11,7 @@ import com.example.library.exception.BookNotFoundException;
 import com.example.library.mapper.BookMapper;
 import com.example.library.specification.BookSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,6 +69,7 @@ public class BookService {
         return BookMapper.mapToDto(saved);
     }
 
+    @CacheEvict(value = "books", key = "#id")
     public BookResponseDto updateBook(Long id, BookRequestDto dto) {
         Book book = bookRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
@@ -77,10 +80,10 @@ public class BookService {
         return BookMapper.mapToDto(updated);
     }
 
+    @CacheEvict(value = "books", key = "#id")
     public void deleteBook(Long id) {
         Book book = bookRepository.findByIdAndDeletedFalse(id)
-                .orElseThrow(() ->
-                        new BookNotFoundException("Book not found with id: " + id));
+                .orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id));
 
         book.setDeleted(true);
 
