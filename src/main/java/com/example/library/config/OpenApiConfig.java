@@ -17,8 +17,11 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Library Management API")
-                        .version("1.0")
-                        .description("REST API documentation for Library Management System"))
+                        .version("4.0")
+                        .description("REST API for managing a library system: authors, books, "
+                                + "members, and loans. Includes JWT authentication, role-based "
+                                + "access control, dynamic search, file upload/download for book "
+                                + "covers, caching, scheduled cleanup tasks, and async notifications."))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new Components()
                         .addSecuritySchemes(securitySchemeName,

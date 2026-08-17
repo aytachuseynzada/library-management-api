@@ -14,6 +14,7 @@ class JWTServiceTest {
     void setUp() {
         jwtService = new JWTService();
         ReflectionTestUtils.setField(jwtService, "SECRET_KEY", "testSecretKeyForJWTTestingPurposesOnly123456");
+        ReflectionTestUtils.setField(jwtService, "expirationTime", 3600000L);
     }
 
     @Test
