@@ -19,4 +19,5 @@ public class LoanResponseDto {
     private LocalDate dueDate;
     private LocalDate returnDate;
     private boolean overdue;
+    private String status;
 }

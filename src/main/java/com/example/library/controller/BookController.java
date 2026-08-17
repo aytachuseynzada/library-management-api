@@ -4,11 +4,16 @@ import com.example.library.dto.BookRequestDto;
 import com.example.library.dto.BookResponseDto;
 import com.example.library.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -83,5 +88,44 @@ public class BookController {
             @RequestParam(required = false) String authorName) {
 
         return bookService.searchBooks(startYear, endYear, title, authorName);
+    }
+    @Operation(
+            summary = "Upload book cover image",
+            description = "Uploads a cover image (JPG/PNG, max 5MB) for a book"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cover image uploaded successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid file type or empty file"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
+            @ApiResponse(responseCode = "403", description = "Only ADMIN role can upload cover images"),
+            @ApiResponse(responseCode = "404", description = "Book not found"),
+            @ApiResponse(responseCode = "413", description = "File size exceeds 5MB limit")
+    })
+    @PostMapping(value = "/{id}/cover", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadCoverImage(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) {
+
+        String filePath = bookService.uploadCoverImage(id, file);
+        return ResponseEntity.ok("Cover image uploaded successfully: " + filePath);
+    }
+
+    @Operation(
+            summary = "Download book cover image",
+            description = "Downloads the cover image of a book"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cover image returned successfully"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
+            @ApiResponse(responseCode = "404", description = "Book not found or has no cover image")
+    })
+    @GetMapping("/{id}/cover")
+    public ResponseEntity<byte[]> downloadCoverImage(@PathVariable Long id) {
+
+        byte[] imageData = bookService.downloadCoverImage(id);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(imageData);
     }
 }

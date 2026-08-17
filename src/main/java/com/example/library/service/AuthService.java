@@ -9,7 +9,9 @@ import com.example.library.exception.UsernameAlreadyExistsException;
 import com.example.library.mapper.UserMapper;
 import com.example.library.security.JWTService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JWTService jwtService;
+    private final AuthenticationManager authenticationManager;
 
     public void register(RegisterRequestDto dto){
         if(userRepository.findByUsername(dto.getUsername()).isPresent()){
@@ -36,27 +39,14 @@ public class AuthService {
 
     public AuthResponseDto login(LoginRequestDto dto){
 
-        User user = userRepository.findByUsername(dto.getUsername())
-                .orElseThrow(
-                        () -> new BadCredentialsException("Invalid username or password")
-                );
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword())
+        );
 
-        System.out.println("Found user: " + user.getUsername());
-        System.out.println("Stored hash: " + user.getPassword());
-        System.out.println("Raw password entered: " + dto.getPassword());
-        System.out.println("Matches: " + passwordEncoder.matches(dto.getPassword(), user.getPassword()));
+        String role = authentication.getAuthorities().iterator().next()
+                .getAuthority().replace("ROLE_", "");
 
-        if(!passwordEncoder.matches(
-                dto.getPassword(),
-                user.getPassword()
-        )){
-            throw new BadCredentialsException("Invalid username or password");
-        }
-
-
-        String token =
-                jwtService.generateToken(user.getUsername());
-
+        String token = jwtService.generateToken(dto.getUsername(), role);
 
         return new AuthResponseDto(token);
     }

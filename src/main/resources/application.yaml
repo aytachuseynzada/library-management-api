@@ -13,8 +13,14 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
 jwt:
-  secret: ${JWT_SECRET}
+  secret: ${JWT_SECRET:your-base64-secret-key-change-in-production}
+  expiration: ${JWT_EXPIRATION:86400000}
 
 server:
   port: 9999

@@ -32,6 +32,7 @@ public interface LoanMapper {
                 .dueDate(loan.getDueDate())
                 .returnDate(loan.getReturnDate())
                 .overdue(isOverdue)
+                .status(loan.getStatus().name())
                 .build();
     }
 }
